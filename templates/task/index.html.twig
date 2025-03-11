@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Task index{% endblock %}
+
+{% block body %}
+    <h1>Task index</h1>
+
+    {# Formulaire pour filtrer les tâches #}
+    <form method="get" action="{{ path('app_task_index') }}" class="mb-3">
+        <label for="filter">Filtrer par statut :</label>
+        <select name="status" id="filter">
+            <option value="">Toutes</option>
+            <option value="1" {{ status is defined and status == '1' ? 'selected' : '' }}>Terminées</option>
+            <option value="0" {{ status is defined and status == '0' ? 'selected' : '' }}>Non terminées</option>
+        </select>
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created_at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.id }}</td>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.status ? '✔ Yes' : '❌ No' }}</td>
+                <td>{{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_task_show', {'id': task.id}) }}">👁 Show</a>
+                    <a href="{{ path('app_task_edit', {'id': task.id}) }}">✏ Edit</a>
+                    <a href="{{ path('app_task_delete', {'id': task.id}) }}" 
+                       onclick="return confirm('Voulez-vous vraiment supprimer cette tâche ?');">🗑 Delete</a>
+                    {% if not task.status %}
+                        <a href="{{ path('app_task_complete', {'id': task.id}) }}">✅ Complete</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_task_new') }}">Create new</a>
+{% endblock %}
